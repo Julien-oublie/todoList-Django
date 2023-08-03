@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Todolist</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <div class="contentTodo">
+      <h1 class="title-Todolist">TodoList</h1>
+      <tab class="tab-todo-list">
+        <div class="todo-list">
+          <div class="content-todo">
+            <ul id="ul-list-todo"></ul>
+            <div class="append-todo">
+              <span>ajouter une todo</span
+              ><input class="new-todo" type="text" />
+              <button id="button-append-todo">ajouter</button>
+            </div>
+          </div>
+        </div>
+      </tab>
+    </div>
+
+    <script>
+
+
+
+      const ulListTodo = document.getElementById('ul-list-todo')
+      const csrfToken = getCookie('csrftoken');
+      const buttonAddTodo = document.getElementById('button-append-todo')
+
+        function getCookie(name) {
+          var value = "; " + document.cookie;
+          var parts = value.split("; " + name + "=");
+          if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+
+
+
+
+
+      function addEventListenersToButtons() {
+        ulListTodo.addEventListener('click', function (event) {
+          if (event.target && event.target.id === 'buttonValidateTodo') {
+            // Code à exécuter lors du clic sur le bouton "Valider"
+            let todoDiv = event.target.parentElement;
+            console.log(todoDiv);
+            let todo = todoDiv.querySelector('.todo-todo').value;
+            let todoStatus = todoDiv.querySelector('.todo-status').checked;
+            console.log(todoDiv.querySelector('.todo-todo'))
+            console.log(todoStatus,todo)
+
+            formData.append("id", event.target.getAttribute('data-id'));
+            formData.append("status", todoStatus);
+            formData.append("todo", todo);
+            const formData = new FormData();
+            fetch('{% url 'modifyTodo' %}', {
+              method: 'POST',
+              headers: { 'X-CSRFToken': csrfToken },
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              refreshTodo()
+            })
+            .catch(error => console.error('Erreur lors de la modification de la tâche:', error));
+          }
+        });
+
+        ulListTodo.addEventListener('click',function(event){
+          if(event.target && event.target.id === ('buttonDeleteTodo')){
+            const formData = new FormData();
+            formData.append("id", event.target.getAttribute('data-id'));
+
+            fetch('{% url 'deleteTodo' %}', {
+              method: 'POST',
+              headers: { 'X-CSRFToken': csrfToken },
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              refreshTodo()
+            })
+          }
+
+        })
+
+        buttonAddTodo.addEventListener('click',function(event){
+
+          if(event.target && event.target.id === ('button-append-todo')){
+            console.log('ici')
+            let todoDivAddTodo = event.target.parentElement;
+            let inputValue = todoDivAddTodo.querySelector('.new-todo').value
+            if(inputValue !== ''){
+              const formData = new FormData();
+              formData.append("todo", inputValue);
+              fetch('{% url 'newTodo' %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+              })
+              .then(response => response.json())
+              .then(data => {
+                todoDivAddTodo.querySelector('.new-todo').value = '';
+                refreshTodo()
+              })
+            }
+
+
+          }
+
+        })
+
+      }
+
+
+      function refreshTodo() {
+        const formData = new FormData();
+          while (ulListTodo.firstChild) {
+            ulListTodo.removeChild(ulListTodo.firstChild);
+          }
+            fetch('{% url 'getTodo' %}',{method : 'GET'})
+            .then(response => response.json())
+            .then(data => {
+              data['datas'].forEach((item) => {
+                var div = document.createElement("div");
+                var status = document.createElement("input");
+                var todo = document.createElement("input")
+                var buttonValidate = document.createElement('button')
+                var buttonDelete = document.createElement('button')
+
+                status.type = 'checkbox'
+                status.checked = item.status
+                todo.value = item.todo
+
+                status.setAttribute('class','todo-status')
+                todo.setAttribute( 'class', 'todo-todo')
+                buttonValidate.setAttribute('data-id', item.id)
+                buttonDelete.setAttribute('data-id', item.id)
+                buttonValidate.id = 'buttonValidateTodo'
+                buttonDelete.id = 'buttonDeleteTodo'
+                buttonValidate.textContent = 'Valider'
+                buttonDelete.textContent = 'delete'
+
+                div.appendChild(status);
+                div.appendChild(todo)
+                div.appendChild(buttonValidate)
+                div.appendChild(buttonDelete)
+                ulListTodo.appendChild(div);
+
+              })
+            })
+            .catch(error => console.error('Erreur lors de la récupération des données:', error));
+
+          }
+
+          document.addEventListener('DOMContentLoaded', function () {
+            refreshTodo()
+            addEventListenersToButtons()
+          });
+    </script>
+  </body>
+</html>

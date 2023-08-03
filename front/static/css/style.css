@@ -1,0 +1,46 @@
+body {
+  height: 100vh;
+}
+
+.title-Todolist {
+  text-align: center;
+}
+
+.tab-todo-list {
+  max-height: 80%;
+
+  display: flex;
+  justify-content: center;
+}
+
+.content-todo {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-left: 9%;
+  margin-block: 30px;
+  align-items: center;
+}
+
+.content-todo li {
+  list-style-type: none;
+}
+
+.content-todo li input {
+  border: none;
+}
+
+.content-todo li input:focus {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.todo-list {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  height: 21%;
+  width: 60%;
+}
