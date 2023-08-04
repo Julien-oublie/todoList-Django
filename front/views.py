@@ -21,7 +21,6 @@ def index(request):
 
 def getTodo(request):
     ## reçoios les donées de l'api
-    
     todolist = TodoList.objects.all()
     
     return JsonResponse({'datas': list(todolist.values())}) 
@@ -46,9 +45,7 @@ def modifiyTodo(request):
 def deleteTodo(request):
     # Récupérer l'article avec l'ID 2
     todoList = TodoList.objects.get(pk=request.POST.get('id'))
-
     # Supprimer l'article
     todoList.delete()
-
     return JsonResponse({'message':"c'est bien delete"})
 

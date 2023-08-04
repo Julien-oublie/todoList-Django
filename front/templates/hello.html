@@ -12,10 +12,13 @@
       <tab class="tab-todo-list">
         <div class="todo-list">
           <div class="content-todo">
-            <ul id="ul-list-todo"></ul>
+            <ul id="ul-list-todo" class="ul-list-todo"></ul>
             <div class="append-todo">
-              <span>ajouter une todo</span
-              ><input class="new-todo" type="text" />
+              <input
+                placeholder="ajouter une todo"
+                class="new-todo"
+                type="text"
+              />
               <button id="button-append-todo">ajouter</button>
             </div>
           </div>
@@ -39,23 +42,19 @@
 
 
 
-
-
       function addEventListenersToButtons() {
         ulListTodo.addEventListener('click', function (event) {
           if (event.target && event.target.id === 'buttonValidateTodo') {
-            // Code à exécuter lors du clic sur le bouton "Valider"
+
             let todoDiv = event.target.parentElement;
-            console.log(todoDiv);
             let todo = todoDiv.querySelector('.todo-todo').value;
             let todoStatus = todoDiv.querySelector('.todo-status').checked;
-            console.log(todoDiv.querySelector('.todo-todo'))
-            console.log(todoStatus,todo)
 
+            const formData = new FormData();
             formData.append("id", event.target.getAttribute('data-id'));
             formData.append("status", todoStatus);
             formData.append("todo", todo);
-            const formData = new FormData();
+
             fetch('{% url 'modifyTodo' %}', {
               method: 'POST',
               headers: { 'X-CSRFToken': csrfToken },
@@ -87,10 +86,33 @@
 
         })
 
-        buttonAddTodo.addEventListener('click',function(event){
 
-          if(event.target && event.target.id === ('button-append-todo')){
+
+        ulListTodo.addEventListener('click',function(event){
+          if(event.target && event.target.className === ('todo-status')){
             console.log('ici')
+            let todoDiv = event.target.parentElement;
+            let todoStatus = todoDiv.querySelector('.todo-status').checked;
+            let todo = todoDiv.querySelector('.todo-todo')
+
+
+            if(todoStatus === true){
+              todo.style.textDecoration = 'line-through'
+              todo.style.border = '3px solid black'
+              todo.style.backgroundColor = 'grey'
+            }else{
+              todo.style.textDecoration = 'none'
+              todo.style.border = '3px solid white'
+              todo.style.backgroundColor = 'white'
+
+            }
+
+          }
+
+        })
+
+        buttonAddTodo.addEventListener('click',function(event){
+          if(event.target && event.target.id === ('button-append-todo')){
             let todoDivAddTodo = event.target.parentElement;
             let inputValue = todoDivAddTodo.querySelector('.new-todo').value
             if(inputValue !== ''){
@@ -143,6 +165,17 @@
                 buttonDelete.id = 'buttonDeleteTodo'
                 buttonValidate.textContent = 'Valider'
                 buttonDelete.textContent = 'delete'
+
+
+                if(item.status === true){
+                  todo.style.textDecoration = 'line-through'
+                  todo.style.border = '3px solid black'
+                  todo.style.backgroundColor = 'grey'
+                }else{
+                  todo.style.textDecoration = 'none'
+                  todo.style.border = '3px solid white'
+                  todo.style.backgroundColor = 'white'
+                }
 
                 div.appendChild(status);
                 div.appendChild(todo)
